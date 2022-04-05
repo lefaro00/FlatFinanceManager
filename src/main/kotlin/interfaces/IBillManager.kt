@@ -1,6 +1,7 @@
 package interfaces
 
 import entities.Bill
+import entities.Debt
 import entities.Item
 import entities.Roommate
 import java.util.*
@@ -15,4 +16,6 @@ interface IBillManager {
     fun addItemToBill(billId: String, articleId: String, priceSplit: MutableList<Roommate>): Boolean
     fun removeItemFromBill(billId: String, item: Item): Boolean
     fun getBill(billID: String):Bill?
+    fun getOverallBalence(): List<Debt>;
+
 }

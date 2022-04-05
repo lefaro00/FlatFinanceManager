@@ -1,6 +1,8 @@
 package useCases
 
+import androidx.compose.ui.window.rememberCursorPositionProvider
 import entities.Bill
+import entities.Debt
 import entities.Item
 import entities.Roommate
 import java.util.*
@@ -99,6 +101,41 @@ class BillManager(private var bills: MutableList<Bill>, private val shopManager:
         return null
     }
 
+    override fun getOverallBalence(): List<Debt> {
+        var debts: MutableList<Debt> = mutableListOf<Debt>()
+        for (bill in bills){
+            if (!bill.balanced){
+                debts.addAll(bill.getCostAllocation())
+            }
+        }
+        return sumUpDebts(debts)
+    }
+
+    private fun sumUpDebts(debts: List<Debt>): List<Debt> {
+        var creditors: MutableList<Roommate> = mutableListOf<Roommate>()
+        var debtors: MutableList<Roommate> = mutableListOf<Roommate>()
+        for (debt in debts){
+            if(!creditors.contains(debt.creditor)){
+                creditors.add(debt.creditor)
+            }
+            if(!debtors.contains(debt.debtor)){
+                debtors.add(debt.debtor)
+            }
+        }
+        var summedUpDebts: MutableList<Debt> = mutableListOf()
+        for (creditor in creditors) {
+            for (debtor in debtors) {
+                var summedUpDeptFromDebtor: Double = 0.0
+                for (debt in debts){
+                    if (debt.creditor == creditor && debt.debtor == debtor){
+                        summedUpDeptFromDebtor += debt.amount
+                    }
+                }
+                summedUpDebts.add(Debt(creditor, debtor, summedUpDeptFromDebtor))
+            }
+        }
+        return summedUpDebts;
+    }
 
 
 }
